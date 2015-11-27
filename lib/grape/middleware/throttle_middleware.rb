@@ -19,13 +19,13 @@ module Grape
           raise ArgumentError.new('Please set a period and limit (see documentation)')
         end
 
-        user_key = options[:user_key]
+        user_key = throttle_options[:user_key]
         user_value = nil
         user_value = user_key.call(env) unless user_key.nil?
         user_value ||= "ip:#{env['REMOTE_ADDR']}"
 
         r = endpoint.routes.first
-        rate_key = "#{r.route_method}:#{r.route_path}:#{user_value}"
+        rate_key = "#{user_value}"
 
         redis = options[:cache]
         begin
