@@ -35,6 +35,8 @@ module Grape
         begin
           redis.ping
           current = redis.get(rate_key).to_i
+          logger.debug(limit)
+          logger.debug(rate_key)
           if limit != 0
             if !current.nil? && current >= limit
               endpoint.error!("too many requests, please try again later", 429)
