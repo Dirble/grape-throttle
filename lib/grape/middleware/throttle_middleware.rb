@@ -20,7 +20,7 @@ module Grape
         end
         
         if limit.is_a?(Proc)
-          limit = limit.call
+          limit = limit.call()
         end
 
         user_key = throttle_options[:user_key]
@@ -48,6 +48,14 @@ module Grape
           logger.warn(e.message)
         end
 
+      end
+      
+      def request
+        @request ||= ::Rack::Request.new(env)
+      end
+      
+      def params
+        @params ||= request.params.to_hash
       end
 
     end
