@@ -20,12 +20,12 @@ module Grape
         end
         
         if limit.is_a?(Proc)
-          limit = limit.call()
+          limit = limit.call(params)
         end
 
         user_key = throttle_options[:user_key]
         user_value = nil
-        user_value = user_key.call(env) unless user_key.nil?
+        user_value = user_key.call(params) unless user_key.nil?
         user_value ||= "ip:#{env['REMOTE_ADDR']}"
 
         r = endpoint.routes.first
