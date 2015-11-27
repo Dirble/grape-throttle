@@ -35,12 +35,14 @@ module Grape
         begin
           redis.ping
           current = redis.get(rate_key).to_i
-          if !current.nil? && current >= limit
-            endpoint.error!("too many requests, please try again later", 429)
-          else
-            redis.multi do
-              redis.incr(rate_key)
-              redis.expire(rate_key, period.to_i)
+          if limit != 0
+            if !current.nil? && current >= limit
+              endpoint.error!("too many requests, please try again later", 429)
+            else
+              redis.multi do
+                redis.incr(rate_key)
+                redis.expire(rate_key, period.to_i)
+              end
             end
           end
 
