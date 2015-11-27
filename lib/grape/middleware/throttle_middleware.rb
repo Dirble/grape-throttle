@@ -32,7 +32,7 @@ module Grape
           redis.ping
           current = redis.get(rate_key).to_i
           if !current.nil? && current >= limit
-            endpoint.error!("too many requests, please try again later", 403)
+            endpoint.error!("too many requests, please try again later", 429)
           else
             redis.multi do
               redis.incr(rate_key)
