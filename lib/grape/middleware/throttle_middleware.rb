@@ -18,6 +18,10 @@ module Grape
         if limit.nil? || period.nil?
           raise ArgumentError.new('Please set a period and limit (see documentation)')
         end
+        
+        if limit.is_a?(Proc)
+          limit = limit.call
+        end
 
         user_key = throttle_options[:user_key]
         user_value = nil
