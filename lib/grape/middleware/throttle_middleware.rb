@@ -1,6 +1,7 @@
 module Grape
   module Middleware
     class ThrottleMiddleware < Grape::Middleware::Base
+      COUNTER_START = 0
       def before
         endpoint = env['api.endpoint']
         logger   = options[:logger] || Logger.new(STDOUT)
@@ -43,9 +44,10 @@ module Grape
               endpoint.error!("too many requests, please try again later", 429)
             else
               redis.multi do
-                if redis.incr(rate_key) == 1
-                  redis.expire(rate_key, period.to_i)
-                end
+                # Set the value of the key to COUNTER_START if the key does not already exist and
+                # set the expiry only on creation to avoid clobbering it later
+                redis.set(rate_key, COUNTER_START, { :nx => true, :ex => period.to_i } )
+                redis.incr(rate_key)
               end
             end
           end
