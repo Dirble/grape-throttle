@@ -43,8 +43,9 @@ module Grape
               endpoint.error!("too many requests, please try again later", 429)
             else
               redis.multi do
-                redis.incr(rate_key)
-                redis.expire(rate_key, period.to_i)
+                if redis.incr(rate_key) == 1
+                  redis.expire(rate_key, period.to_i)
+                end
               end
             end
           end
